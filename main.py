@@ -22,4 +22,4 @@ import sys
 from imagedraw.imagedrawapplication import ImageDrawApplication
 
 if __name__ == "__main__":
-    application = ImageDrawApplication(sys.argv) 
+    application = ImageDrawApplication(sys.argv)
