@@ -17,16 +17,9 @@ This work was funded by Joanna Leng's EPSRC funded RSE Fellowship (EP/R025819/1)
 @copyright 2020
 @author: j.h.pickering@leeds.ac.uk and j.leng@leeds.ac.uk
 """
-# set up linting conditions
-# pylint: disable = c-extension-no-member
 
 import sys
-import PyQt5.QtWidgets as qw
-
-from imagedraw.gui.imagedrawmainwindow import ImageDrawMainWindow
+from imagedraw.imagedrawapplication import ImageDrawApplication
 
 if __name__ == "__main__":
-    app = qw.QApplication(sys.argv)
-    window = ImageDrawMainWindow()
-    window.show()
-    sys.exit(app.exec_())
+    application = ImageDrawApplication(sys.argv) 
