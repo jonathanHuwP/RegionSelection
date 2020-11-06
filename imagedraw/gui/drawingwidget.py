@@ -61,3 +61,12 @@ class DrawingWidget(qw.QWidget, Ui_DrawingWidget):
             print(">>> Show all")
         else:
             print(">>>> Only show drawing")
+            
+    def display_image(self, image):
+        """
+        display a new image
+            
+            Args:
+                image (QImage) image to be displayed
+        """
+        print(f"{id(self)} showing {image}")

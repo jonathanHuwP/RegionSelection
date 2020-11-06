@@ -21,7 +21,10 @@ This work was funded by Joanna Leng's EPSRC funded RSE Fellowship (EP/R025819/1)
 # pylint: disable = too-many-public-methods
 # pylint: disable = c-extension-no-member
 
+import os
+
 import PyQt5.QtWidgets as qw
+import PyQt5.QtGui as qg
 import PyQt5.QtCore as qc
 
 from imagedraw.gui.Ui_imagedrawmainwindow import Ui_ImageDrawMainWindow
@@ -45,6 +48,19 @@ class ImageDrawMainWindow(qw.QMainWindow, Ui_ImageDrawMainWindow):
         """
         super().__init__(parent)
         self.setupUi(self)
+        
+        ## the drawing widget
+        self._drawing_widget = None
+        
+        ## the results widget
+        self._results_widget = None
+        
+        ## storage for the image
+        self._image = None
+        
+        ## storage for the lines
+        self._lines = None
+        
         self.setup_drawing_tab()
         self.setup_table_tab()
 
@@ -53,19 +69,18 @@ class ImageDrawMainWindow(qw.QMainWindow, Ui_ImageDrawMainWindow):
         initalize the drawing widget
         """
         tab = self._tabWidget.widget(0)
-        drawing_widget = DrawingWidget(tab)
+        self._drawing_widget = DrawingWidget(tab)
         layout = qw.QVBoxLayout(tab)
-        layout.addWidget(drawing_widget)
+        layout.addWidget(self._drawing_widget)
 
     def setup_table_tab(self):
         """
         initalize the results table widget
         """
-        print("setup table")
         tab = self._tabWidget.widget(1)
-        results_widget = ResultsTableWidget(tab)
+        self._results_widget = ResultsTableWidget(tab)
         layout = qw.QVBoxLayout(tab)
-        layout.addWidget(results_widget)
+        layout.addWidget(self._results_widget)
 
     @qc.pyqtSlot()
     def save_data(self):
@@ -86,4 +101,12 @@ class ImageDrawMainWindow(qw.QMainWindow, Ui_ImageDrawMainWindow):
         """
         callback for loading an image
         """
-        print("load image {}".format(id(self)))
+        file_name, _ = qw.QFileDialog.getOpenFileName(
+            self,
+            "Read Results File",
+            os.path.expanduser('~'),
+            "PNG (*.png);; JPEG (*.jpg)")
+
+        if file_name is not None and file_name != '':
+            self._image = qg.QImage(file_name)
+            self._drawing_widget.display_image(self._image)
