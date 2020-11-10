@@ -91,7 +91,19 @@ class ImageDrawMainWindow(qw.QMainWindow, Ui_ImageDrawMainWindow):
         layout.addWidget(self._results_widget)
         
         self.new_selection.connect(model.add_region)
+        model.dataChanged.connect(self.data_changed)
         
+    @qc.pyqtSlot(qc.QModelIndex, qc.QModelIndex)
+    def data_changed(self, tl_index, br_index):
+        """
+        callback for user editing of the data via tableview
+        
+            Args:
+                tl_index (qc.QModelIndex) top left location in data
+                br_index (qc.QModelIndex) bottom right location in data
+        """
+        self._drawing_widget.repaint()
+
     @qc.pyqtSlot(DrawRect)
     def new_region(self, region):
         """
@@ -126,7 +138,6 @@ class ImageDrawMainWindow(qw.QMainWindow, Ui_ImageDrawMainWindow):
         doc = qg.QTextDocument()
         
         html_string = self._results_widget.get_table_as_html()
-        print(html_string)
         doc.setHtml(html_string)
         doc.print(printer)
 

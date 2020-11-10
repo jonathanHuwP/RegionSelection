@@ -126,7 +126,6 @@ class RegionsTableModel(qc.QAbstractTableModel):
         """
         if role == qc.Qt.EditRole and value.isnumeric():
             rect = self._data[index.row()]
-            print(type(rect.top))
             if index.column() == 1:
                 self._data[index.row()] = DrawRect(top=rect.top,
                                                    bottom=rect.bottom,
