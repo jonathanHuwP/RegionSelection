@@ -30,12 +30,17 @@ import PyQt5.QtCore as qc
 from imagedraw.gui.Ui_imagedrawmainwindow import Ui_ImageDrawMainWindow
 from imagedraw.gui.resultstablewidget import ResultsTableWidget
 from imagedraw.gui.drawingwidget import DrawingWidget
+from imagedraw.gui.DrawRect import DrawRect
+from imagedraw.gui.regionstablemodel import RegionsTableModel
 
 class ImageDrawMainWindow(qw.QMainWindow, Ui_ImageDrawMainWindow):
     """
     The main window
     """
-
+    
+    ## signal to indicate the user has selected a new rectangle
+    new_selection = qc.pyqtSignal(DrawRect)
+    
     def __init__(self, parent=None):
         """
         the object initalization function
@@ -58,8 +63,8 @@ class ImageDrawMainWindow(qw.QMainWindow, Ui_ImageDrawMainWindow):
         ## storage for the image
         self._image = None
         
-        ## storage for the lines
-        self._lines = None
+        ## storage for the regions
+        self._regions = []
         
         self.setup_drawing_tab()
         self.setup_table_tab()
@@ -69,7 +74,7 @@ class ImageDrawMainWindow(qw.QMainWindow, Ui_ImageDrawMainWindow):
         initalize the drawing widget
         """
         tab = self._tabWidget.widget(0)
-        self._drawing_widget = DrawingWidget(tab)
+        self._drawing_widget = DrawingWidget(tab, self)
         layout = qw.QVBoxLayout(tab)
         layout.addWidget(self._drawing_widget)
 
@@ -78,9 +83,25 @@ class ImageDrawMainWindow(qw.QMainWindow, Ui_ImageDrawMainWindow):
         initalize the results table widget
         """
         tab = self._tabWidget.widget(1)
-        self._results_widget = ResultsTableWidget(tab)
+        model = RegionsTableModel(self._regions)
+        self._results_widget = ResultsTableWidget(tab, model)
         layout = qw.QVBoxLayout(tab)
         layout.addWidget(self._results_widget)
+        
+        self.new_selection.connect(model.add_region)
+        
+    @qc.pyqtSlot(DrawRect)
+    def new_region(self, region):
+        """
+        slot for signal that a new regions has been selected, emit own signal
+        
+            Args: 
+                region (DrawRect) the region that is to be added
+                
+            Emits:
+                new_selection (DrawRect) forward the message to the data model
+        """
+        self.new_selection.emit(region)
 
     @qc.pyqtSlot()
     def save_data(self):
@@ -110,3 +131,9 @@ class ImageDrawMainWindow(qw.QMainWindow, Ui_ImageDrawMainWindow):
         if file_name is not None and file_name != '':
             self._image = qg.QImage(file_name)
             self._drawing_widget.display_image(self._image)
+
+    def get_regions(self):
+        """
+        getter for the regions list
+        """
+        return self._regions

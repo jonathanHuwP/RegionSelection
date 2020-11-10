@@ -15,7 +15,7 @@
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
    <item>
-    <widget class="QScrollArea" name="scrollArea">
+    <widget class="QScrollArea" name="_scrollArea">
      <property name="widgetResizable">
       <bool>true</bool>
      </property>
@@ -25,7 +25,7 @@
         <x>0</x>
         <y>0</y>
         <width>635</width>
-        <height>255</height>
+        <height>266</height>
        </rect>
       </property>
      </widget>
@@ -53,13 +53,6 @@
        </property>
       </spacer>
      </item>
-     <item>
-      <widget class="QPushButton" name="_acceptLineButton">
-       <property name="text">
-        <string>Accept Line</string>
-       </property>
-      </widget>
-     </item>
     </layout>
    </item>
   </layout>
@@ -67,26 +60,10 @@
  <resources/>
  <connections>
   <connection>
-   <sender>_acceptLineButton</sender>
-   <signal>clicked()</signal>
-   <receiver>DrawingWidget</receiver>
-   <slot>accept_line()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>592</x>
-     <y>296</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>331</x>
-     <y>163</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
    <sender>_displayAllButton</sender>
    <signal>toggled(bool)</signal>
    <receiver>DrawingWidget</receiver>
-   <slot>toggel_display_lines()</slot>
+   <slot>toggel_display_regions()</slot>
    <hints>
     <hint type="sourcelabel">
      <x>67</x>
