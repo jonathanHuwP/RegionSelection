@@ -26,6 +26,8 @@ import os
 import PyQt5.QtWidgets as qw
 import PyQt5.QtGui as qg
 import PyQt5.QtCore as qc
+import PyQt5.QtWebEngineWidgets as qe
+import PyQt5.QtPrintSupport as qp
 
 from imagedraw.gui.Ui_imagedrawmainwindow import Ui_ImageDrawMainWindow
 from imagedraw.gui.resultstablewidget import ResultsTableWidget
@@ -109,6 +111,24 @@ class ImageDrawMainWindow(qw.QMainWindow, Ui_ImageDrawMainWindow):
         callback for saveing the data
         """
         print("save data {}".format(id(self)))
+        
+    @qc.pyqtSlot()
+    def print_table(self):
+        """
+        callback for printing the table as pdf
+        """
+        print(f"print the table {id(self)}")
+        printer = qp.QPrinter(qp.QPrinter.PrinterResolution)
+        printer.setOutputFormat(qp.QPrinter.PdfFormat)
+        printer.setPaperSize(qp.QPrinter.A4)
+        printer.setOutputFileName("output.pdf")
+        
+        doc = qg.QTextDocument()
+        
+        html_string = self._results_widget.get_table_as_html()
+        print(html_string)
+        doc.setHtml(html_string)
+        doc.print(printer)
 
     @qc.pyqtSlot()
     def save_image(self):

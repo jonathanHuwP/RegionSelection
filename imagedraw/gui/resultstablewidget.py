@@ -51,7 +51,33 @@ class ResultsTableWidget(qw.QWidget, Ui_ResultsTableWidget):
         self._tableView.setStyleSheet("QHeaderView::section {background-color:lightgray}")
         self._tableView.verticalHeader().hide()
 
-    def new_data(self):
-        print(">>>>>>> new data")
-        self._tableView.viewport().update()
-        self.repaint()
+    def get_table_as_html(self):
+        """
+        get the current table as a html string
+
+            Returns:
+                string of html
+        """
+        html = "<table style=\"width:100%\">\n<tr>"
+        index = self._tableView.model().index(0, 0)
+        rows = self._tableView.model().rowCount(index)
+        columns = self._tableView.model().columnCount(index)
+
+        for column in range(columns):
+            if not self._tableView.isColumnHidden(column):
+                header = self._tableView.model().headerData(column, qc.Qt.Horizontal, qc.Qt.DisplayRole).value()
+                html += f"<th>{header}</th>"
+        html += "</tr>\n"
+
+        for row in range(rows):
+            html += "<tr>"
+            for column in range(columns):
+                if not self._tableView.isColumnHidden(column):
+                    index = self._tableView.model().index(row, column)
+                    data = self._tableView.model().data(index, qc.Qt.DisplayRole).value()
+                    html += f"<td>{data}</td>"
+            html += "</tr>\n"
+
+        html += "\n</table>"
+        
+        return html

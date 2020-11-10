@@ -48,8 +48,12 @@
      <string>File</string>
     </property>
     <addaction name="_actionLoad_Image"/>
+    <addaction name="separator"/>
     <addaction name="_actionSave_Data"/>
+    <addaction name="separator"/>
+    <addaction name="_actionPrint_Table"/>
     <addaction name="_actionSave_Image"/>
+    <addaction name="separator"/>
     <addaction name="_actionExit"/>
    </widget>
    <addaction name="menuFile"/>
@@ -73,6 +77,11 @@
   <action name="_actionExit">
    <property name="text">
     <string>Exit</string>
+   </property>
+  </action>
+  <action name="_actionPrint_Table">
+   <property name="text">
+    <string>Print Table</string>
    </property>
   </action>
  </widget>
@@ -131,6 +140,22 @@
    <signal>triggered()</signal>
    <receiver>ImageDrawMainWindow</receiver>
    <slot>close()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>399</x>
+     <y>299</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>_actionPrint_Table</sender>
+   <signal>triggered()</signal>
+   <receiver>ImageDrawMainWindow</receiver>
+   <slot>print_table()</slot>
    <hints>
     <hint type="sourcelabel">
      <x>-1</x>
