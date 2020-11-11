@@ -47,7 +47,7 @@ class DrawingWidget(qw.QWidget, Ui_DrawingWidget):
         super().__init__(parent)
 
         self.setupUi(self)
-        
+
         ## the label which will display images
         self._imageLabel = RegionSelectionLabel(self, regions_store)
         self._imageLabel.set_adding()
@@ -63,32 +63,35 @@ class DrawingWidget(qw.QWidget, Ui_DrawingWidget):
             self.repaint()
         else:
             self._imageLabel.set_adding()
-            
+
     def get_zoom(self):
         """
         dummy to keep drawing wiget happy
         """
         return 1.0
-            
+
     def display_image(self, image):
         """
         display a new image
-            
+
             Args:
                 image (QImage) image to be displayed
         """
         self._imageLabel.setAlignment(
                 qc.Qt.AlignTop | qc.Qt.AlignLeft)
         self._imageLabel.setSizePolicy(
-                qw.QSizePolicy.Ignored, 
+                qw.QSizePolicy.Ignored,
                 qw.QSizePolicy.Fixed)
         self._imageLabel.setSizePolicy(
-                qw.QSizePolicy.Minimum, 
+                qw.QSizePolicy.Minimum,
                 qw.QSizePolicy.Minimum)
-                
+
         self._scrollArea.setWidget(self._imageLabel)
         self._scrollArea.setHorizontalScrollBarPolicy(qc.Qt.ScrollBarAsNeeded)
         self._scrollArea.setVerticalScrollBarPolicy(qc.Qt.ScrollBarAsNeeded)
         self._scrollArea.setVisible(True)
-        
+
         self._imageLabel.setPixmap(qg.QPixmap(image))
+
+    def get_raw_pixmap(self):
+        return self._imageLabel.pixmap()

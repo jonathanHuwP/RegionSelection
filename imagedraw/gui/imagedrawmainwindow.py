@@ -26,7 +26,7 @@ import os
 import PyQt5.QtWidgets as qw
 import PyQt5.QtGui as qg
 import PyQt5.QtCore as qc
-import PyQt5.QtWebEngineWidgets as qe
+#import PyQt5.QtWebEngineWidgets as qe
 import PyQt5.QtPrintSupport as qp
 
 from imagedraw.gui.Ui_imagedrawmainwindow import Ui_ImageDrawMainWindow
@@ -39,10 +39,10 @@ class ImageDrawMainWindow(qw.QMainWindow, Ui_ImageDrawMainWindow):
     """
     The main window
     """
-    
+
     ## signal to indicate the user has selected a new rectangle
     new_selection = qc.pyqtSignal(DrawRect)
-    
+
     def __init__(self, parent=None):
         """
         the object initalization function
@@ -55,19 +55,19 @@ class ImageDrawMainWindow(qw.QMainWindow, Ui_ImageDrawMainWindow):
         """
         super().__init__(parent)
         self.setupUi(self)
-        
+
         ## the drawing widget
         self._drawing_widget = None
-        
+
         ## the results widget
         self._results_widget = None
-        
+
         ## storage for the image
         self._image = None
-        
+
         ## storage for the regions
         self._regions = []
-        
+
         self.setup_drawing_tab()
         self.setup_table_tab()
 
@@ -89,15 +89,15 @@ class ImageDrawMainWindow(qw.QMainWindow, Ui_ImageDrawMainWindow):
         self._results_widget = ResultsTableWidget(tab, model)
         layout = qw.QVBoxLayout(tab)
         layout.addWidget(self._results_widget)
-        
+
         self.new_selection.connect(model.add_region)
         model.dataChanged.connect(self.data_changed)
-        
+
     @qc.pyqtSlot(qc.QModelIndex, qc.QModelIndex)
     def data_changed(self, tl_index, br_index):
         """
         callback for user editing of the data via tableview
-        
+
             Args:
                 tl_index (qc.QModelIndex) top left location in data
                 br_index (qc.QModelIndex) bottom right location in data
@@ -108,10 +108,10 @@ class ImageDrawMainWindow(qw.QMainWindow, Ui_ImageDrawMainWindow):
     def new_region(self, region):
         """
         slot for signal that a new regions has been selected, emit own signal
-        
-            Args: 
+
+            Args:
                 region (DrawRect) the region that is to be added
-                
+
             Emits:
                 new_selection (DrawRect) forward the message to the data model
         """
@@ -123,7 +123,7 @@ class ImageDrawMainWindow(qw.QMainWindow, Ui_ImageDrawMainWindow):
         callback for saveing the data
         """
         print("save data {}".format(id(self)))
-        
+
     @qc.pyqtSlot()
     def print_table(self):
         """
@@ -134,9 +134,9 @@ class ImageDrawMainWindow(qw.QMainWindow, Ui_ImageDrawMainWindow):
         printer.setOutputFormat(qp.QPrinter.PdfFormat)
         printer.setPaperSize(qp.QPrinter.A4)
         printer.setOutputFileName("output.pdf")
-        
+
         doc = qg.QTextDocument()
-        
+
         html_string = self._results_widget.get_table_as_html()
         doc.setHtml(html_string)
         doc.print(printer)
@@ -147,6 +147,11 @@ class ImageDrawMainWindow(qw.QMainWindow, Ui_ImageDrawMainWindow):
         callback for saving the current image
         """
         print("save image {}".format(id(self)))
+        file_name = "output.png"
+        pixmap = self._drawing_widget.get_raw_pixmap()
+        
+        if pixmap is not None:
+            pixmap.save(file_name)
 
     @qc.pyqtSlot()
     def load_image(self):
