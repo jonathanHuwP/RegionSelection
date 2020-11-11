@@ -93,5 +93,20 @@ class DrawingWidget(qw.QWidget, Ui_DrawingWidget):
 
         self._imageLabel.setPixmap(qg.QPixmap(image))
 
+    def get_current_pixmap(self):
+        """
+        getter for the currently displayed image, including regions
+        
+            Returns:
+                QPixmap
+        """
+        return self._imageLabel.grab()
+        
     def get_raw_pixmap(self):
+        """
+        getter for the original image, without regions
+        
+            Returns:
+                QPixmap
+        """
         return self._imageLabel.pixmap()

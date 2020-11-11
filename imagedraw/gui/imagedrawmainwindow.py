@@ -148,7 +148,7 @@ class ImageDrawMainWindow(qw.QMainWindow, Ui_ImageDrawMainWindow):
         """
         print("save image {}".format(id(self)))
         file_name = "output.png"
-        pixmap = self._drawing_widget.get_raw_pixmap()
+        pixmap = self._drawing_widget.get_current_pixmap()
         
         if pixmap is not None:
             pixmap.save(file_name)
