@@ -23,8 +23,6 @@ This work was funded by Joanna Leng's EPSRC funded RSE Fellowship (EP/R025819/1)
 
 import os
 import csv
-import tempfile
-import pickle
 
 import PyQt5.QtWidgets as qw
 import PyQt5.QtGui as qg
@@ -37,59 +35,7 @@ from imagedraw.gui.resultstablewidget import ResultsTableWidget
 from imagedraw.gui.drawingwidget import DrawingWidget
 from imagedraw.gui.DrawRect import DrawRect
 from imagedraw.gui.regionstablemodel import RegionsTableModel
-
-class AutoSaveBinary(object):
-    """
-    construct and use a binary autosave file
-    """
-
-    def __init__(self, project, file_path=None):
-        """
-        set-up the object
-
-            Args:
-                project (string) the project name will be added to save
-                file_path (string) the full path name of the file if not present tempfile is created
-        """
-        if file_path is None:
-            descriptor, file_path = tempfile.mkstemp(suffix='.cgtback',
-                                                     prefix='.',
-                                                     dir=os.getcwd(),
-                                                     text=False)
-            os.close(descriptor)
-
-        ## store the file path
-        self._file_path = file_path
-
-        ## store the project name
-        self._project = project
-
-    def get_file_path(self):
-        """
-        getter for the file path
-        """
-        return self._file_path
-
-    def save_data(self, output):
-        """
-        write data to the binary file
-
-            Args:
-                output (object) the data to be output
-        """
-        with open(self._file_path, 'w+b') as file:
-            # delete existing contents
-            file.truncate(0)
-
-            # save binary
-            file.write(pickle.dumps(output))
-
-    def get_data(self):
-        """
-        getter for the current data
-        """
-        with open(self._file_path, 'w+b') as file:
-            return pickle.load(file)
+import imagedraw.gui.autosavebinary as autosave
 
 class ImageDrawMainWindow(qw.QMainWindow, Ui_ImageDrawMainWindow):
     """
@@ -99,7 +45,7 @@ class ImageDrawMainWindow(qw.QMainWindow, Ui_ImageDrawMainWindow):
     ## signal to indicate the user has selected a new rectangle
     new_selection = qc.pyqtSignal(DrawRect)
 
-    def __init__(self, parent=None):
+    def __init__(self, args, parent=None):
         """
         the object initalization function
 
@@ -111,9 +57,6 @@ class ImageDrawMainWindow(qw.QMainWindow, Ui_ImageDrawMainWindow):
         """
         super().__init__(parent)
         self.setupUi(self)
-
-        ## get autosave file
-        self._autosave = AutoSaveBinary("my project")
 
         ## the drawing widget
         self._drawing_widget = None
@@ -129,6 +72,21 @@ class ImageDrawMainWindow(qw.QMainWindow, Ui_ImageDrawMainWindow):
 
         self.setup_drawing_tab()
         self.setup_table_tab()
+
+        files = autosave.list_backup_files(os.getcwd())
+        for file in files:
+            print(file)
+            
+        projects = autosave.list_backup_projects(files)
+        for project in projects:
+            print(project)
+            
+        project = "my_project"
+        if len(args) > 1:
+            project = args[1]
+        
+        ## get autosave file
+        self._autosave = autosave.AutoSaveBinary(project)
 
     def setup_drawing_tab(self):
         """
@@ -256,5 +214,5 @@ class ImageDrawMainWindow(qw.QMainWindow, Ui_ImageDrawMainWindow):
         return self._regions
 
     def autosave(self):
-        print(f"Autosave {id(self)}")
         self._autosave.save_data(self._regions)
+        

@@ -33,6 +33,6 @@ class ImageDrawApplication(qw.QApplication):
         initialize a main window and start event loop
         """
         super().__init__(args)
-        window = ImageDrawMainWindow()
+        window = ImageDrawMainWindow(args)
         window.show()
         self.exec_()    # enter event loop
