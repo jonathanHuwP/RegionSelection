@@ -22,6 +22,9 @@ This work was funded by Joanna Leng's EPSRC funded RSE Fellowship (EP/R025819/1)
 # pylint: disable = c-extension-no-member
 
 import os
+import csv
+import tempfile
+import pickle
 
 import PyQt5.QtWidgets as qw
 import PyQt5.QtGui as qg
@@ -34,6 +37,59 @@ from imagedraw.gui.resultstablewidget import ResultsTableWidget
 from imagedraw.gui.drawingwidget import DrawingWidget
 from imagedraw.gui.DrawRect import DrawRect
 from imagedraw.gui.regionstablemodel import RegionsTableModel
+
+class AutoSaveBinary(object):
+    """
+    construct and use a binary autosave file
+    """
+
+    def __init__(self, project, file_path=None):
+        """
+        set-up the object
+
+            Args:
+                project (string) the project name will be added to save
+                file_path (string) the full path name of the file if not present tempfile is created
+        """
+        if file_path is None:
+            descriptor, file_path = tempfile.mkstemp(suffix='.cgtback',
+                                                     prefix='.',
+                                                     dir=os.getcwd(),
+                                                     text=False)
+            os.close(descriptor)
+
+        ## store the file path
+        self._file_path = file_path
+
+        ## store the project name
+        self._project = project
+
+    def get_file_path(self):
+        """
+        getter for the file path
+        """
+        return self._file_path
+
+    def save_data(self, output):
+        """
+        write data to the binary file
+
+            Args:
+                output (object) the data to be output
+        """
+        with open(self._file_path, 'w+b') as file:
+            # delete existing contents
+            file.truncate(0)
+
+            # save binary
+            file.write(pickle.dumps(output))
+
+    def get_data(self):
+        """
+        getter for the current data
+        """
+        with open(self._file_path, 'w+b') as file:
+            return pickle.load(file)
 
 class ImageDrawMainWindow(qw.QMainWindow, Ui_ImageDrawMainWindow):
     """
@@ -55,6 +111,9 @@ class ImageDrawMainWindow(qw.QMainWindow, Ui_ImageDrawMainWindow):
         """
         super().__init__(parent)
         self.setupUi(self)
+
+        ## get autosave file
+        self._autosave = AutoSaveBinary("my project")
 
         ## the drawing widget
         self._drawing_widget = None
@@ -103,6 +162,7 @@ class ImageDrawMainWindow(qw.QMainWindow, Ui_ImageDrawMainWindow):
                 br_index (qc.QModelIndex) bottom right location in data
         """
         self._drawing_widget.repaint()
+        self.autosave()
 
     @qc.pyqtSlot(DrawRect)
     def new_region(self, region):
@@ -116,13 +176,34 @@ class ImageDrawMainWindow(qw.QMainWindow, Ui_ImageDrawMainWindow):
                 new_selection (DrawRect) forward the message to the data model
         """
         self.new_selection.emit(region)
+        self.autosave()
 
     @qc.pyqtSlot()
     def save_data(self):
         """
-        callback for saveing the data
+        callback to save the data
         """
         print("save data {}".format(id(self)))
+
+        if len(self._regions) < 1:
+            return
+
+        data = []
+        for region in self._regions:
+            data.append([region.top, region.bottom, region.left, region.right])
+
+        file_name, _ = qw.QFileDialog.getSaveFileName(
+            self,
+            self.tr("Save File"),
+            os.path.expanduser('~'),
+            self.tr("CSV (*.csv)"))
+
+        if file_name is not None:
+            with open(file_name, 'w', newline='') as file:
+                writer = csv.writer(file)
+                header = ["top y", "left x", "bottom y", "right x"]
+                writer.writerow(header)
+                writer.writerows(data)
 
     @qc.pyqtSlot()
     def print_table(self):
@@ -149,7 +230,7 @@ class ImageDrawMainWindow(qw.QMainWindow, Ui_ImageDrawMainWindow):
         print("save image {}".format(id(self)))
         file_name = "output.png"
         pixmap = self._drawing_widget.get_current_pixmap()
-        
+
         if pixmap is not None:
             pixmap.save(file_name)
 
@@ -173,3 +254,7 @@ class ImageDrawMainWindow(qw.QMainWindow, Ui_ImageDrawMainWindow):
         getter for the regions list
         """
         return self._regions
+
+    def autosave(self):
+        print(f"Autosave {id(self)}")
+        self._autosave.save_data(self._regions)
