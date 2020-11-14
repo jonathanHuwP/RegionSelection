@@ -85,12 +85,7 @@ class ImageDrawMainWindow(qw.QMainWindow, Ui_ImageDrawMainWindow):
         create a new autosave file
         """
         files = autosave.list_backup_files(os.getcwd())
-        for file in files:
-            print(file)
-
         projects = autosave.list_backup_projects(files)
-        for project in projects:
-            print(project)
 
         # get autosave file
         self._autosave = autosave.AutoSaveBinary(self._project)
@@ -154,10 +149,8 @@ class ImageDrawMainWindow(qw.QMainWindow, Ui_ImageDrawMainWindow):
                                             "Overwrite",
                                             "You will loose current data?")
 
-            if reply == qw.QMessageBox.Yes:
-                print("Go ahded")
-            else:
-                print("abort")
+            if reply == qw.QMessageBox.No:
+                return
 
         file_name, _ = qw.QFileDialog.getOpenFileName(
             self,
@@ -166,31 +159,35 @@ class ImageDrawMainWindow(qw.QMainWindow, Ui_ImageDrawMainWindow):
             self.tr("CSV (*.csv)"))
 
         if file_name is not None and file_name != '':
-            self.read_regions_csv_file(file_name)
+            with open(file_name, 'r') as in_file:
+                reader = csv.reader(in_file)
+                self.read_regions_csv_file(reader)
             
-    def read_regions_csv_file(self, file_name):
+    def read_regions_csv_file(self, reader):
         """
         read a csv file of regions
         
             Args:
-                file_name (string) the full path to the file
+                reader (csv.reader) a ready to go csv file reader
         """
-        with open(file_name, 'r') as in_file:
-            reader = csv.reader(in_file)
-            
-            # get the project name and remove header line
-            self._project = next(reader, None)
-            self.setWindowTitle(self._project[0])
-            headers = next(reader, None)
-            
-            for row in reader:
-                self._regions.append(DrawRect(np.uint32(row[0]), 
-                                              np.uint32(row[2]), 
-                                              np.uint32(row[1]), 
-                                              np.uint32(row[3])))
-                                              
-            self.data_changed(None, None)
-            self.make_autosave()
+        # get the project name and 
+        self._project = next(reader, "No Name")
+        self.setWindowTitle(self._project[0])
+        
+        # pop the headers
+        next(reader, None)
+        
+        # replace the regions
+        self._regions = []
+        for row in reader:
+            region = DrawRect(np.uint32(row[0]), 
+                              np.uint32(row[1]), 
+                              np.uint32(row[2]), 
+                              np.uint32(row[3]))
+            self._regions.append(region)
+                                          
+        self.data_changed(None, None)
+        self.make_autosave()
 
     @qc.pyqtSlot()
     def save_data(self):
@@ -207,14 +204,14 @@ class ImageDrawMainWindow(qw.QMainWindow, Ui_ImageDrawMainWindow):
             os.path.expanduser('~'),
             self.tr("CSV (*.csv)"))
 
-        if file_name is not None:
+        if file_name is not None and file_name != '':
             data = []
             for region in self._regions:
                 data.append([region.top, region.bottom, region.left, region.right])
 
             with open(file_name, 'w', newline='') as file:
                 writer = csv.writer(file)
-                header = ["top y", "left x", "bottom y", "right x"]
+                header = ["top y", "bottom y", "left x", "right x"]
                 writer.writerow([self._project])
                 writer.writerow(header)
                 writer.writerows(data)
@@ -224,7 +221,6 @@ class ImageDrawMainWindow(qw.QMainWindow, Ui_ImageDrawMainWindow):
         """
         callback for printing the table as pdf
         """
-        print(f"print the table {id(self)}")
         printer = qp.QPrinter(qp.QPrinter.PrinterResolution)
         printer.setOutputFormat(qp.QPrinter.PdfFormat)
         printer.setPaperSize(qp.QPrinter.A4)
@@ -241,7 +237,6 @@ class ImageDrawMainWindow(qw.QMainWindow, Ui_ImageDrawMainWindow):
         """
         callback for saving the current image
         """
-        print("save image {}".format(id(self)))
         file_name = "output.png"
         pixmap = self._drawing_widget.get_current_pixmap()
 
