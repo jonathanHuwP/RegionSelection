@@ -23,6 +23,7 @@ This work was funded by Joanna Leng's EPSRC funded RSE Fellowship (EP/R025819/1)
 
 import os
 import csv
+import numpy as np
 
 import PyQt5.QtWidgets as qw
 import PyQt5.QtGui as qg
@@ -45,7 +46,7 @@ class ImageDrawMainWindow(qw.QMainWindow, Ui_ImageDrawMainWindow):
     ## signal to indicate the user has selected a new rectangle
     new_selection = qc.pyqtSignal(DrawRect)
 
-    def __init__(self, args, parent=None):
+    def __init__(self, parent=None):
         """
         the object initalization function
 
@@ -73,20 +74,26 @@ class ImageDrawMainWindow(qw.QMainWindow, Ui_ImageDrawMainWindow):
         self.setup_drawing_tab()
         self.setup_table_tab()
 
+        ## storage for the autosave object
+        self._autosave = None
+
+        ## name of the current project
+        self._project = None
+
+    def make_autosave(self):
+        """
+        create a new autosave file
+        """
         files = autosave.list_backup_files(os.getcwd())
         for file in files:
             print(file)
-            
+
         projects = autosave.list_backup_projects(files)
         for project in projects:
             print(project)
-            
-        project = "my_project"
-        if len(args) > 1:
-            project = args[1]
-        
-        ## get autosave file
-        self._autosave = autosave.AutoSaveBinary(project)
+
+        # get autosave file
+        self._autosave = autosave.AutoSaveBinary(self._project)
 
     def setup_drawing_tab(self):
         """
@@ -137,18 +144,62 @@ class ImageDrawMainWindow(qw.QMainWindow, Ui_ImageDrawMainWindow):
         self.autosave()
 
     @qc.pyqtSlot()
+    def load_data(self):
+        if self._image is None:
+            qw.QMessageBox.information(self, "No Image", "You must have an image")
+            return
+
+        if len(self._regions) > 0:
+            reply = qw.QMessageBox.question(self,
+                                            "Overwrite",
+                                            "You will loose current data?")
+
+            if reply == qw.QMessageBox.Yes:
+                print("Go ahded")
+            else:
+                print("abort")
+
+        file_name, _ = qw.QFileDialog.getOpenFileName(
+            self,
+            self.tr("Save File"),
+            os.path.expanduser('~'),
+            self.tr("CSV (*.csv)"))
+
+        if file_name is not None and file_name != '':
+            self.read_regions_csv_file(file_name)
+            
+    def read_regions_csv_file(self, file_name):
+        """
+        read a csv file of regions
+        
+            Args:
+                file_name (string) the full path to the file
+        """
+        with open(file_name, 'r') as in_file:
+            reader = csv.reader(in_file)
+            
+            # get the project name and remove header line
+            self._project = next(reader, None)
+            self.setWindowTitle(self._project[0])
+            headers = next(reader, None)
+            
+            for row in reader:
+                self._regions.append(DrawRect(np.uint32(row[0]), 
+                                              np.uint32(row[2]), 
+                                              np.uint32(row[1]), 
+                                              np.uint32(row[3])))
+                                              
+            self.data_changed(None, None)
+            self.make_autosave()
+
+    @qc.pyqtSlot()
     def save_data(self):
         """
         callback to save the data
         """
-        print("save data {}".format(id(self)))
-
         if len(self._regions) < 1:
+            qw.QMessageBox.information(self, "Save", "You have no data to save")
             return
-
-        data = []
-        for region in self._regions:
-            data.append([region.top, region.bottom, region.left, region.right])
 
         file_name, _ = qw.QFileDialog.getSaveFileName(
             self,
@@ -157,9 +208,14 @@ class ImageDrawMainWindow(qw.QMainWindow, Ui_ImageDrawMainWindow):
             self.tr("CSV (*.csv)"))
 
         if file_name is not None:
+            data = []
+            for region in self._regions:
+                data.append([region.top, region.bottom, region.left, region.right])
+
             with open(file_name, 'w', newline='') as file:
                 writer = csv.writer(file)
                 header = ["top y", "left x", "bottom y", "right x"]
+                writer.writerow([self._project])
                 writer.writerow(header)
                 writer.writerows(data)
 
@@ -204,8 +260,21 @@ class ImageDrawMainWindow(qw.QMainWindow, Ui_ImageDrawMainWindow):
             "PNG (*.png);; JPEG (*.jpg)")
 
         if file_name is not None and file_name != '':
+            reply = qw.QInputDialog.getText(self,
+                                            "Project Name",
+                                            "Proj Name",
+                                            qw.QLineEdit.Normal)
+            if not reply[1]:
+                return
+
+            if reply[0] != '':
+                self._project = reply[0]
+            else:
+                self._project = file_name
+
             self._image = qg.QImage(file_name)
             self._drawing_widget.display_image(self._image)
+            self.setWindowTitle(self._project)
 
     def get_regions(self):
         """
@@ -214,5 +283,7 @@ class ImageDrawMainWindow(qw.QMainWindow, Ui_ImageDrawMainWindow):
         return self._regions
 
     def autosave(self):
+        if self._autosave is None:
+            self.make_autosave()
+
         self._autosave.save_data(self._regions)
-        
