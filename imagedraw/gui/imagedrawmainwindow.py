@@ -45,6 +45,9 @@ class ImageDrawMainWindow(qw.QMainWindow, Ui_ImageDrawMainWindow):
 
     ## signal to indicate the user has selected a new rectangle
     new_selection = qc.pyqtSignal(DrawRect)
+    
+    ## signal to indicate the user has read a data file
+    replace_data = qc.pyqtSignal(list)
 
     def __init__(self, parent=None):
         """
@@ -110,6 +113,7 @@ class ImageDrawMainWindow(qw.QMainWindow, Ui_ImageDrawMainWindow):
         layout.addWidget(self._results_widget)
 
         self.new_selection.connect(model.add_region)
+        self.replace_data.connect(model.replace_data)
         model.dataChanged.connect(self.data_changed)
 
     @qc.pyqtSlot(qc.QModelIndex, qc.QModelIndex)
@@ -178,15 +182,15 @@ class ImageDrawMainWindow(qw.QMainWindow, Ui_ImageDrawMainWindow):
         next(reader, None)
         
         # replace the regions
-        self._regions = []
+        regions = []
         for row in reader:
             region = DrawRect(np.uint32(row[0]), 
                               np.uint32(row[1]), 
                               np.uint32(row[2]), 
                               np.uint32(row[3]))
-            self._regions.append(region)
+            regions.append(region)
                                           
-        self.data_changed(None, None)
+        self.replace_data.emit(regions)
         self.make_autosave()
 
     @qc.pyqtSlot()

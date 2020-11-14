@@ -166,3 +166,16 @@ class RegionsTableModel(qc.QAbstractTableModel):
         self.beginResetModel()
         self._data.append(region)
         self.endResetModel()
+
+    @qc.pyqtSlot(list)
+    def replace_data(self, regions):
+        """
+        add a new region to the data, will clear all selections and editing
+
+            Args:
+                regions (list) the regions to add
+        """
+        self.beginResetModel()
+        self._data.clear()
+        self._data.extend(regions)
+        self.endResetModel()
