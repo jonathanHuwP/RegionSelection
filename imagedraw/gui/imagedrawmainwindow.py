@@ -24,6 +24,7 @@ This work was funded by Joanna Leng's EPSRC funded RSE Fellowship (EP/R025819/1)
 import os
 import csv
 import numpy as np
+import pathlib
 
 import PyQt5.QtWidgets as qw
 import PyQt5.QtGui as qg
@@ -192,6 +193,17 @@ class ImageDrawMainWindow(qw.QMainWindow, Ui_ImageDrawMainWindow):
                                           
         self.replace_data.emit(regions)
         self.make_autosave()
+        
+    def read_backup_file(self, file_name):
+        """
+        read and load a binary backup
+        
+            Args:
+                file_name (string) the file path including name
+        """
+        self._project, regions = get_backup_project(file_path)
+        self.setWindowTitle(self._project)
+        self.replace_data.emit(regions)
 
     @qc.pyqtSlot()
     def save_data(self):
@@ -252,17 +264,20 @@ class ImageDrawMainWindow(qw.QMainWindow, Ui_ImageDrawMainWindow):
         """
         callback for loading an image
         """
-        file_name, _ = qw.QFileDialog.getOpenFileName(
+        file_name, file_type = qw.QFileDialog.getOpenFileName(
             self,
             "Read Results File",
             os.path.expanduser('~'),
             "PNG (*.png);; JPEG (*.jpg)")
-
+            
+        path = pathlib.Path(file_name)
+        
         if file_name is not None and file_name != '':
             reply = qw.QInputDialog.getText(self,
                                             "Project Name",
                                             "Proj Name",
-                                            qw.QLineEdit.Normal)
+                                            qw.QLineEdit.Normal,
+                                            path.stem)
             if not reply[1]:
                 return
 
