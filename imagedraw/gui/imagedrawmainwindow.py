@@ -23,8 +23,8 @@ This work was funded by Joanna Leng's EPSRC funded RSE Fellowship (EP/R025819/1)
 
 import os
 import csv
-import numpy as np
 import pathlib
+import numpy as np
 
 import PyQt5.QtWidgets as qw
 import PyQt5.QtGui as qg
@@ -46,7 +46,7 @@ class ImageDrawMainWindow(qw.QMainWindow, Ui_ImageDrawMainWindow):
 
     ## signal to indicate the user has selected a new rectangle
     new_selection = qc.pyqtSignal(DrawRect)
-    
+
     ## signal to indicate the user has read a data file
     replace_data = qc.pyqtSignal(list)
 
@@ -88,10 +88,6 @@ class ImageDrawMainWindow(qw.QMainWindow, Ui_ImageDrawMainWindow):
         """
         create a new autosave file
         """
-        files = autosave.list_backup_files(os.getcwd())
-        projects = autosave.list_backup_projects(files)
-
-        # get autosave file
         self._autosave = autosave.AutoSaveBinary(self._project)
 
     def setup_drawing_tab(self):
@@ -145,6 +141,9 @@ class ImageDrawMainWindow(qw.QMainWindow, Ui_ImageDrawMainWindow):
 
     @qc.pyqtSlot()
     def load_data(self):
+        """
+        callback for loading data from csv file
+        """
         if self._image is None:
             qw.QMessageBox.information(self, "No Image", "You must have an image")
             return
@@ -157,6 +156,19 @@ class ImageDrawMainWindow(qw.QMainWindow, Ui_ImageDrawMainWindow):
             if reply == qw.QMessageBox.No:
                 return
 
+        # get a list of backups and list of project names
+        projects = autosave.AutoSaveBinary.list_backups(os.getcwd())
+        matches = [tmp for tmp in projects if tmp[1] == self._project]
+
+        if len(matches) > 0:
+            reply = qw.QMessageBox.question(self,
+                                            "Duplicate",
+                                            "A back up of the project exists. Load instead?")
+
+            if reply == qw.QMessageBox.Yes:
+                self.load_backup_file(matches[0][0])
+                return
+
         file_name, _ = qw.QFileDialog.getOpenFileName(
             self,
             self.tr("Save File"),
@@ -167,41 +179,41 @@ class ImageDrawMainWindow(qw.QMainWindow, Ui_ImageDrawMainWindow):
             with open(file_name, 'r') as in_file:
                 reader = csv.reader(in_file)
                 self.read_regions_csv_file(reader)
-            
+
     def read_regions_csv_file(self, reader):
         """
         read a csv file of regions
-        
+
             Args:
                 reader (csv.reader) a ready to go csv file reader
         """
-        # get the project name and 
+        # get the project name and
         self._project = next(reader, "No Name")
         self.setWindowTitle(self._project[0])
-        
+
         # pop the headers
         next(reader, None)
-        
+
         # replace the regions
         regions = []
         for row in reader:
-            region = DrawRect(np.uint32(row[0]), 
-                              np.uint32(row[1]), 
-                              np.uint32(row[2]), 
+            region = DrawRect(np.uint32(row[0]),
+                              np.uint32(row[1]),
+                              np.uint32(row[2]),
                               np.uint32(row[3]))
             regions.append(region)
-                                          
+
         self.replace_data.emit(regions)
         self.make_autosave()
-        
-    def read_backup_file(self, file_name):
+
+    def load_backup_file(self, file_name):
         """
         read and load a binary backup
-        
+
             Args:
                 file_name (string) the file path including name
         """
-        self._project, regions = get_backup_project(file_path)
+        self._project, regions = autosave.AutoSaveBinary.get_backup_project(file_name)
         self.setWindowTitle(self._project)
         self.replace_data.emit(regions)
 
@@ -264,14 +276,13 @@ class ImageDrawMainWindow(qw.QMainWindow, Ui_ImageDrawMainWindow):
         """
         callback for loading an image
         """
-        file_name, file_type = qw.QFileDialog.getOpenFileName(
-            self,
-            "Read Results File",
-            os.path.expanduser('~'),
-            "PNG (*.png);; JPEG (*.jpg)")
-            
+        file_name, _ = qw.QFileDialog.getOpenFileName(self,
+                                                      "Read Results File",
+                                                      os.path.expanduser('~'),
+                                                      "PNG (*.png);; JPEG (*.jpg)")
+
         path = pathlib.Path(file_name)
-        
+
         if file_name is not None and file_name != '':
             reply = qw.QInputDialog.getText(self,
                                             "Project Name",
@@ -297,6 +308,9 @@ class ImageDrawMainWindow(qw.QMainWindow, Ui_ImageDrawMainWindow):
         return self._regions
 
     def autosave(self):
+        """
+        autosave the data, creating a new file if necessary
+        """
         if self._autosave is None:
             self.make_autosave()
 

@@ -25,11 +25,11 @@ import os
 import tempfile
 import pickle
 
-class AutoSaveBinary(object):
+class AutoSaveBinary():
     """
     construct and use a binary autosave file
     """
-
+    ## file type identification code
     _MAGIC_CODE = "idw-01"
 
     def __init__(self, project):
@@ -76,53 +76,58 @@ class AutoSaveBinary(object):
             # save binary
             pickle.dump(data, file)
 
-def list_backup_files(dir_path):
-    """
-    make a list of all backup files
+    @staticmethod
+    def list_backups(dir_path):
+        """
+        make a list of all backup files, and project names
 
-        Args:
-            dir_path (string) full path to search directory
+            Args:
+                dir_path (string) full path to search directory
 
-        Returns:
-            list of backup files in the directory
-    """
-    files = []
+            Returns:
+                list of tuples, each of which is (backup file, projcet name)
+        """
+        files = []
+        output = []
 
-    raw = os.listdir(dir_path)
+        raw = os.listdir(dir_path)
 
-    for item in raw:
-        if os.path.isfile(item) and item.endswith(".idback"):
-            files.append(os.path.join(dir_path, item))
+        for item in raw:
+            if os.path.isfile(item) and item.endswith(".idback"):
+                files.append(os.path.join(dir_path, item))
 
-    return files
+        for file in files:
+            data = None
 
-def list_backup_projects(file_paths):
-    projects = []
+            # ignore empty or corrupt files
+            try:
+                data = pickle.load(open(file, 'rb'))
+            except EOFError:
+                pass
 
-    for file in file_paths:
-        data = None
+            if data is not None and len(data) > 1 and data[0] == AutoSaveBinary._MAGIC_CODE:
+                output.append((file, data[1]))
 
-        # ignore empty or corrupt files
+        return output
+
+    @staticmethod
+    def get_backup_project(file_path):
+        """
+        gets the contents of a backup file23
+
+            Args:
+                file_path (string) the file path including name
+
+            Returns:
+                (string) the project name
+                ([DrawRect]) the project data
+        """
         try:
-            data = pickle.load(open(file, 'rb'))
+            tmp = pickle.load(open(file_path, 'rb'))
         except EOFError:
-            pass
+            return None, None
 
-        if data is not None and len(data) > 1 and data[0] == AutoSaveBinary._MAGIC_CODE:
-            projects.append(data[1])
+        if tmp[0] == AutoSaveBinary._MAGIC_CODE:
+            return tmp[1], tmp[2]
 
-    return projects
-
-def get_backup_project(file_path):
-    project = None
-    data = None
-
-    try:
-        tmp = pickle.load(open(file, 'rb'))
-    except EOFError:
         return None, None
-
-    if tmp[0] == AutoSaveBinary._MAGIC_CODE:
-        return tmp[1], tmp[2]
-
-    return None, None
