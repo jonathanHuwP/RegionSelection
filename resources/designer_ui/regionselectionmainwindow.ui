@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>ImageDrawMainWindow</class>
- <widget class="QMainWindow" name="ImageDrawMainWindow">
+ <class>RegionSelectionMainWindow</class>
+ <widget class="QMainWindow" name="RegionSelectionMainWindow">
   <property name="geometry">
    <rect>
     <x>0</x>
@@ -11,7 +11,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>ImageDraw</string>
+   <string>RegionSelection</string>
   </property>
   <widget class="QWidget" name="centralwidget">
    <layout class="QVBoxLayout" name="verticalLayout">
@@ -96,7 +96,7 @@
   <connection>
    <sender>_actionLoad_Image</sender>
    <signal>triggered()</signal>
-   <receiver>ImageDrawMainWindow</receiver>
+   <receiver>RegionSelectionMainWindow</receiver>
    <slot>load_image()</slot>
    <hints>
     <hint type="sourcelabel">
@@ -112,7 +112,7 @@
   <connection>
    <sender>_actionSave_Data</sender>
    <signal>triggered()</signal>
-   <receiver>ImageDrawMainWindow</receiver>
+   <receiver>RegionSelectionMainWindow</receiver>
    <slot>save_data()</slot>
    <hints>
     <hint type="sourcelabel">
@@ -128,7 +128,7 @@
   <connection>
    <sender>_actionSave_Image</sender>
    <signal>triggered()</signal>
-   <receiver>ImageDrawMainWindow</receiver>
+   <receiver>RegionSelectionMainWindow</receiver>
    <slot>save_image()</slot>
    <hints>
     <hint type="sourcelabel">
@@ -144,7 +144,7 @@
   <connection>
    <sender>_actionExit</sender>
    <signal>triggered()</signal>
-   <receiver>ImageDrawMainWindow</receiver>
+   <receiver>RegionSelectionMainWindow</receiver>
    <slot>close()</slot>
    <hints>
     <hint type="sourcelabel">
@@ -160,7 +160,7 @@
   <connection>
    <sender>_actionPrint_Table</sender>
    <signal>triggered()</signal>
-   <receiver>ImageDrawMainWindow</receiver>
+   <receiver>RegionSelectionMainWindow</receiver>
    <slot>print_table()</slot>
    <hints>
     <hint type="sourcelabel">
@@ -176,7 +176,7 @@
   <connection>
    <sender>_actionLoad_Data</sender>
    <signal>triggered()</signal>
-   <receiver>ImageDrawMainWindow</receiver>
+   <receiver>RegionSelectionMainWindow</receiver>
    <slot>load_data()</slot>
    <hints>
     <hint type="sourcelabel">

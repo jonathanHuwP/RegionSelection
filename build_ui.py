@@ -19,13 +19,13 @@ specific language governing permissions and limitations under the License.
 import os
 
 # a list of the modules that the package requires
-modules = ["imagedrawmainwindow", "drawingwidget", "resultstablewidget"]
+modules = ["regionselectionmainwindow", "regionselectionwidget", "resultstablewidget"]
 
 # relative path to the Qt .ui files
 ui_path = "./resources/designer_ui/{}.ui"
 
 # relative path to the python source files
-py_path = "./imagedraw/gui/Ui_{}.py"
+py_path = "./regoinselection/gui/Ui_{}.py"
 
 def build(module_name):
     """

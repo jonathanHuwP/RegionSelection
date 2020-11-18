@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>DrawingWidget</class>
- <widget class="QWidget" name="DrawingWidget">
+ <class>RegionSelectionWidget</class>
+ <widget class="QWidget" name="RegionSelectionWidget">
   <property name="geometry">
    <rect>
     <x>0</x>
@@ -11,7 +11,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Drawing Widget</string>
+   <string>Region Selection Widget</string>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
    <item>
@@ -62,7 +62,7 @@
   <connection>
    <sender>_displayAllButton</sender>
    <signal>toggled(bool)</signal>
-   <receiver>DrawingWidget</receiver>
+   <receiver>RegionSelectionWidget</receiver>
    <slot>toggel_display_regions()</slot>
    <hints>
     <hint type="sourcelabel">
