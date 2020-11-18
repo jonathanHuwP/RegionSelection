@@ -25,10 +25,10 @@ import PyQt5.QtWidgets as qw
 import PyQt5.QtGui as qg
 import PyQt5.QtCore as qc
 
-from imagedraw.gui.regionselectionlabel import RegionSelectionLabel
-from imagedraw.gui.Ui_regionselectionwidget import Ui_regionselectionWidget
+from regionselection.gui.regionselectionlabel import RegionSelectionLabel
+from regionselection.gui.Ui_regionselectionwidget import Ui_RegionSelectionWidget
 
-class RegionSelectionWidget(qw.QWidget, Ui_DrawingWidget):
+class RegionSelectionWidget(qw.QWidget, Ui_RegionSelectionWidget):
     """
     Provideds the ability to display an image and, draw lines on the image
     """

@@ -31,12 +31,12 @@ import PyQt5.QtGui as qg
 import PyQt5.QtCore as qc
 import PyQt5.QtPrintSupport as qp
 
-from imagedraw.gui.Ui_regionselectionmainwindow import Ui_RegionSelectionMainWindow
-from imagedraw.gui.resultstablewidget import ResultsTableWidget
-from imagedraw.gui.drawingwidget import DrawingWidget
-from imagedraw.gui.regionstablemodel import RegionsTableModel
-from imagedraw.util.drawrect import DrawRect
-import imagedraw.util.autosavebinary as autosave
+from regionselection.gui.Ui_regionselectionmainwindow import Ui_RegionSelectionMainWindow
+from regionselection.gui.resultstablewidget import ResultsTableWidget
+from regionselection.gui.regionselectionwidget import RegionSelectionWidget
+from regionselection.gui.regionstablemodel import RegionsTableModel
+from regionselection.util.drawrect import DrawRect
+import regionselection.util.autosavebinary as autosave
 
 class RegionSelectionMainWindow(qw.QMainWindow, Ui_RegionSelectionMainWindow):
     """
@@ -94,7 +94,7 @@ class RegionSelectionMainWindow(qw.QMainWindow, Ui_RegionSelectionMainWindow):
         initalize the drawing widget
         """
         tab = self._tabWidget.widget(0)
-        self._drawing_widget = DrawingWidget(tab, self)
+        self._drawing_widget = RegionSelectionWidget(tab, self)
         layout = qw.QVBoxLayout(tab)
         layout.addWidget(self._drawing_widget)
 

@@ -25,7 +25,7 @@ import PyQt5.QtWidgets as qw
 import PyQt5.QtGui as qg
 import PyQt5.QtCore as qc
 
-from imagedraw.gui.Ui_resultstablewidget import Ui_ResultsTableWidget
+from regionselection.gui.Ui_resultstablewidget import Ui_ResultsTableWidget
 
 class ResultsTableWidget(qw.QWidget, Ui_ResultsTableWidget):
     """

@@ -26,7 +26,7 @@ import PyQt5.QtCore as qc
 
 import numpy as np
 
-from imagedraw.util.drawrect import DrawRect
+from regionselection.util.drawrect import DrawRect
 
 class RegionsTableModel(qc.QAbstractTableModel):
     """

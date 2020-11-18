@@ -25,7 +25,7 @@ modules = ["regionselectionmainwindow", "regionselectionwidget", "resultstablewi
 ui_path = "./resources/designer_ui/{}.ui"
 
 # relative path to the python source files
-py_path = "./regoinselection/gui/Ui_{}.py"
+py_path = "./regionselection/gui/Ui_{}.py"
 
 def build(module_name):
     """
