@@ -19,7 +19,7 @@ This work was funded by Joanna Leng's EPSRC funded RSE Fellowship (EP/R025819/1)
 """
 
 import sys
-from regionselection.imagedrawapplication import ImageDrawApplication
+from regionselection.regionselectionapplication import RegionSelectionApplication
 
 if __name__ == "__main__":
-    application = ImageDrawApplication(sys.argv)
+    application = RegionSelectionApplication(sys.argv)

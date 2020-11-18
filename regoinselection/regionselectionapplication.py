@@ -23,9 +23,9 @@ This work was funded by Joanna Leng's EPSRC funded RSE Fellowship (EP/R025819/1)
 
 import PyQt5.QtWidgets as qw
 
-from imagedraw.gui.imagedrawmainwindow import ImageDrawMainWindow
+from imagedraw.gui.regionselectionmainwindow import RegionSelectionMainWindow
 
-class ImageDrawApplication(qw.QApplication):
+class RegionSelectionApplication(qw.QApplication):
     """top level application"""
 
     def __init__(self, args):
@@ -33,6 +33,6 @@ class ImageDrawApplication(qw.QApplication):
         initialize a main window and start event loop
         """
         super().__init__(args)
-        window = ImageDrawMainWindow()
+        window = RegionSelectionMainWindow()
         window.show()
         self.exec_()    # enter event loop
