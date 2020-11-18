@@ -31,14 +31,14 @@ import PyQt5.QtGui as qg
 import PyQt5.QtCore as qc
 import PyQt5.QtPrintSupport as qp
 
-from imagedraw.gui.Ui_imagedrawmainwindow import Ui_ImageDrawMainWindow
+from imagedraw.gui.Ui_regionselectionmainwindow import Ui_RegionSelectionMainWindow
 from imagedraw.gui.resultstablewidget import ResultsTableWidget
 from imagedraw.gui.drawingwidget import DrawingWidget
 from imagedraw.gui.regionstablemodel import RegionsTableModel
 from imagedraw.util.drawrect import DrawRect
 import imagedraw.util.autosavebinary as autosave
 
-class ImageDrawMainWindow(qw.QMainWindow, Ui_ImageDrawMainWindow):
+class RegionSelectionMainWindow(qw.QMainWindow, Ui_RegionSelectionMainWindow):
     """
     The main window
     """
