@@ -21,13 +21,12 @@ This work was funded by Joanna Leng's EPSRC funded RSE Fellowship (EP/R025819/1)
 # pylint: disable = too-many-public-methods
 # pylint: disable = c-extension-no-member
 
-#import PyQt5.QtWidgets as qw
 import PyQt5.QtGui as qg
 import PyQt5.QtCore as qc
 
 import numpy as np
 
-from imagedraw.gui.DrawRect import DrawRect
+from imagedraw.util.drawrect import DrawRect
 
 class RegionsTableModel(qc.QAbstractTableModel):
     """

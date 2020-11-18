@@ -29,15 +29,14 @@ import numpy as np
 import PyQt5.QtWidgets as qw
 import PyQt5.QtGui as qg
 import PyQt5.QtCore as qc
-#import PyQt5.QtWebEngineWidgets as qe
 import PyQt5.QtPrintSupport as qp
 
 from imagedraw.gui.Ui_imagedrawmainwindow import Ui_ImageDrawMainWindow
 from imagedraw.gui.resultstablewidget import ResultsTableWidget
 from imagedraw.gui.drawingwidget import DrawingWidget
-from imagedraw.gui.DrawRect import DrawRect
 from imagedraw.gui.regionstablemodel import RegionsTableModel
-import imagedraw.gui.autosavebinary as autosave
+from imagedraw.util.drawrect import DrawRect
+import imagedraw.util.autosavebinary as autosave
 
 class ImageDrawMainWindow(qw.QMainWindow, Ui_ImageDrawMainWindow):
     """
