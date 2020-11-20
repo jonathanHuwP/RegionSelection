@@ -127,3 +127,7 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+
+# module initalization and Qt designer
+__init__.py
+Ui_*
