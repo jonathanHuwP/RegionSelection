@@ -20,6 +20,7 @@ This work was funded by Joanna Leng's EPSRC funded RSE Fellowship (EP/R025819/1)
 # set up linting conditions
 # pylint: disable = too-many-public-methods
 # pylint: disable = c-extension-no-member
+# pylint: disable = import-error
 
 import PyQt5.QtWidgets as qw
 import PyQt5.QtGui as qg
@@ -49,9 +50,9 @@ class RegionSelectionWidget(qw.QWidget, Ui_RegionSelectionWidget):
         self.setupUi(self)
 
         ## the label which will display images
-        self._imageLabel = RegionSelectionLabel(self, regions_store)
-        self._imageLabel.set_adding()
-        self._imageLabel.new_selection.connect(regions_store.new_region)
+        self._image_label = RegionSelectionLabel(self, regions_store)
+        self._image_label.set_adding()
+        self._image_label.new_selection.connect(regions_store.new_region)
 
     @qc.pyqtSlot()
     def toggel_display_regions(self):
@@ -59,16 +60,10 @@ class RegionSelectionWidget(qw.QWidget, Ui_RegionSelectionWidget):
         callback for 'show all' radio button
         """
         if self._displayAllButton.isChecked():
-            self._imageLabel.set_display_all_no_time()
+            self._image_label.set_display_all_no_time()
             self.repaint()
         else:
-            self._imageLabel.set_adding()
-
-    def get_zoom(self):
-        """
-        dummy to keep drawing wiget happy
-        """
-        return 1.0
+            self._image_label.set_adding()
 
     def display_image(self, image):
         """
@@ -77,36 +72,36 @@ class RegionSelectionWidget(qw.QWidget, Ui_RegionSelectionWidget):
             Args:
                 image (QImage) image to be displayed
         """
-        self._imageLabel.setAlignment(
+        self._image_label.setAlignment(
                 qc.Qt.AlignTop | qc.Qt.AlignLeft)
-        self._imageLabel.setSizePolicy(
+        self._image_label.setSizePolicy(
                 qw.QSizePolicy.Ignored,
                 qw.QSizePolicy.Fixed)
-        self._imageLabel.setSizePolicy(
+        self._image_label.setSizePolicy(
                 qw.QSizePolicy.Minimum,
                 qw.QSizePolicy.Minimum)
 
-        self._scrollArea.setWidget(self._imageLabel)
+        self._scrollArea.setWidget(self._image_label)
         self._scrollArea.setHorizontalScrollBarPolicy(qc.Qt.ScrollBarAsNeeded)
         self._scrollArea.setVerticalScrollBarPolicy(qc.Qt.ScrollBarAsNeeded)
         self._scrollArea.setVisible(True)
 
-        self._imageLabel.setPixmap(qg.QPixmap(image))
+        self._image_label.setPixmap(qg.QPixmap(image))
 
     def get_current_pixmap(self):
         """
         getter for the currently displayed image, including regions
-        
+
             Returns:
                 QPixmap
         """
-        return self._imageLabel.grab()
-        
+        return self._image_label.grab()
+
     def get_raw_pixmap(self):
         """
         getter for the original image, without regions
-        
+
             Returns:
                 QPixmap
         """
-        return self._imageLabel.pixmap()
+        return self._image_label.pixmap()

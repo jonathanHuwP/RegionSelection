@@ -18,11 +18,11 @@ This work was funded by Joanna Leng's EPSRC funded RSE Fellowship (EP/R025819/1)
 @author: j.h.pickering@leeds.ac.uk and j.leng@leeds.ac.uk
 """
 # set up linting conditions
-# pylint: disable = too-many-public-methods
 # pylint: disable = c-extension-no-member
+# pylint: disable = import-error
+# pylint: disable = too-few-public-methods
 
 import PyQt5.QtWidgets as qw
-import PyQt5.QtGui as qg
 import PyQt5.QtCore as qc
 
 from regionselection.gui.Ui_resultstablewidget import Ui_ResultsTableWidget
@@ -65,7 +65,9 @@ class ResultsTableWidget(qw.QWidget, Ui_ResultsTableWidget):
 
         for column in range(columns):
             if not self._tableView.isColumnHidden(column):
-                header = self._tableView.model().headerData(column, qc.Qt.Horizontal, qc.Qt.DisplayRole).value()
+                header = self._tableView.model().headerData(column,
+                                                            qc.Qt.Horizontal,
+                                                            qc.Qt.DisplayRole).value()
                 html += f"<th>{header}</th>"
         html += "</tr>\n"
 
@@ -79,5 +81,5 @@ class ResultsTableWidget(qw.QWidget, Ui_ResultsTableWidget):
             html += "</tr>\n"
 
         html += "\n</table>"
-        
+
         return html

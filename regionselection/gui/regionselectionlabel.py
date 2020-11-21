@@ -18,6 +18,11 @@ specific language governing permissions and limitations under the License.
 @copyright 2020
 @author: j.h.pickering@leeds.ac.uk
 """
+# set up linting conditions
+# pylint: disable = too-many-public-methods
+# pylint: disable = c-extension-no-member
+# pylint: disable = import-error
+
 from enum import IntEnum
 import PyQt5.QtWidgets as qw
 import PyQt5.QtGui as qg
@@ -25,10 +30,6 @@ import PyQt5.QtCore as qc
 import numpy as np
 
 from regionselection.util.drawrect import DrawRect
-
-# set up linting conditions
-# pylint: disable = too-many-public-methods
-# pylint: disable = c-extension-no-member
 
 class SelectionState(IntEnum):
     """
@@ -70,7 +71,7 @@ class RegionSelectionLabel(qw.QLabel):
 
         ## (QObject) the parent object
         self._parent = parent
-        
+
         ## storage for the regions
         self._regions_store = regions_store
 
@@ -230,7 +231,7 @@ class RegionSelectionLabel(qw.QLabel):
         """
         # get horizontal range
         horiz = (self._start.x(), self._end.x())
-        zoom = self._parent.get_zoom()
+        zoom = 1.0
 
         # get horizontal range
         start_h = np.uint32(np.round(min(horiz)/zoom))
@@ -302,8 +303,10 @@ class RegionSelectionLabel(qw.QLabel):
         if self._start is not None and self._end is not None:
             painter.drawRect(qc.QRect(self._start, self._end))
         elif self._rectangle is not None:
-            zoomed = self._rectangle.scale(self._parent.get_zoom())
-            rect = qc.QRect(zoomed.left, zoomed.top, zoomed.width, zoomed.height)
+            rect = qc.QRect(self._rectangle.left, 
+                            self._rectangle.top, 
+                            self._rectangle.width, 
+                            self._rectangle.height)
             painter.drawRect(rect)
 
     def draw_selected_mode(self, painter):
@@ -333,8 +336,7 @@ class RegionSelectionLabel(qw.QLabel):
                 region (Region) the region to be drawn
         """
         rectangle = DrawRect(region.top, region.bottom, region.left, region.right)
-        zoomed = rectangle.scale(self._parent.get_zoom())
-        painter.drawRect(qc.QRect(zoomed.left, zoomed.top, zoomed.width, zoomed.height))
+        painter.drawRect(qc.QRect(rectangle.left, rectangle.top, rectangle.width, rectangle.height))
 
     def draw_showing_all_regions(self, painter, time):
         """

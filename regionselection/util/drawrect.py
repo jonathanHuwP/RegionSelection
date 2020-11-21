@@ -95,13 +95,25 @@ class DrawRect(BaseRect):
         right = np.uint32(np.round(self.right*del_x))
 
         return DrawRect(top, bottom, left, right)
-        
+
     @property
     def width(self):
+        """
+        getter for the width of the region
+
+            Return
+                width (int)
+        """
         return self.right - self.left
-        
+
     @property
     def height(self):
+        """
+        getter for the height of the region
+
+            Return
+                height (int)
+        """
         return self.bottom - self.top
 
     def __repr__(self):
