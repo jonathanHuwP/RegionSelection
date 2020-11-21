@@ -248,10 +248,18 @@ class RegionSelectionMainWindow(qw.QMainWindow, Ui_RegionSelectionMainWindow):
         """
         callback for printing the table as pdf
         """
+        file_name, _ = qw.QFileDialog.getSaveFileName(self,
+                                                      self.tr("Save Pdf"),
+                                                      os.path.expanduser('~'),
+                                                      self.tr("PDF (*.pdf)"))        
+        
+        if file_name is None or file_name == '':
+            return
+            
         printer = qp.QPrinter(qp.QPrinter.PrinterResolution)
         printer.setOutputFormat(qp.QPrinter.PdfFormat)
         printer.setPaperSize(qp.QPrinter.A4)
-        printer.setOutputFileName("output.pdf")
+        printer.setOutputFileName(file_name)
 
         doc = qg.QTextDocument()
 
@@ -264,9 +272,15 @@ class RegionSelectionMainWindow(qw.QMainWindow, Ui_RegionSelectionMainWindow):
         """
         callback for saving the current image
         """
-        file_name = "output.png"
+        file_name, _ = qw.QFileDialog.getSaveFileName(self,
+                                                      self.tr("Save PNG"),
+                                                      os.path.expanduser('~'),
+                                                      self.tr("PNG (*.png)"))        
+        
+        if file_name is None or file_name == '':
+            return
+            
         pixmap = self._drawing_widget.get_current_pixmap()
-
         if pixmap is not None:
             pixmap.save(file_name)
 
