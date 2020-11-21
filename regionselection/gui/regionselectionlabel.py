@@ -48,10 +48,6 @@ class SelectionState(IntEnum):
     ## Display all regions
     DISPLAY_ALL = 40
 
-    ## Display all time independent
-    DISPLAY_ALL_NO_TIME = 50
-
-
 class RegionSelectionLabel(qw.QLabel):
     """
     subclass of label allowing selection of region by drawing rectangle and
@@ -141,16 +137,6 @@ class RegionSelectionLabel(qw.QLabel):
                 None
         """
         self._state = SelectionState.DISPLAY_ALL
-        self.repaint()
-
-    def set_display_all_no_time(self):
-        """
-        set the state to
-
-            Returns:
-                None
-        """
-        self._state = SelectionState.DISPLAY_ALL_NO_TIME
         self.repaint()
 
     def mousePressEvent(self, event):
@@ -284,9 +270,7 @@ class RegionSelectionLabel(qw.QLabel):
         elif self._state == SelectionState.DISPLAY_SELECTED:
             self.draw_selected_mode(painter)
         elif self._state == SelectionState.DISPLAY_ALL:
-            self.draw_showing_all_regions(painter, time=True)
-        elif self._state == SelectionState.DISPLAY_ALL_NO_TIME:
-            self.draw_showing_all_regions(painter, time=False)
+            self.draw_showing_all_regions(painter)
         else:
             print(self._state)
 
@@ -303,9 +287,9 @@ class RegionSelectionLabel(qw.QLabel):
         if self._start is not None and self._end is not None:
             painter.drawRect(qc.QRect(self._start, self._end))
         elif self._rectangle is not None:
-            rect = qc.QRect(self._rectangle.left, 
-                            self._rectangle.top, 
-                            self._rectangle.width, 
+            rect = qc.QRect(self._rectangle.left,
+                            self._rectangle.top,
+                            self._rectangle.width,
                             self._rectangle.height)
             painter.drawRect(rect)
 
@@ -338,13 +322,12 @@ class RegionSelectionLabel(qw.QLabel):
         rectangle = DrawRect(region.top, region.bottom, region.left, region.right)
         painter.drawRect(qc.QRect(rectangle.left, rectangle.top, rectangle.width, rectangle.height))
 
-    def draw_showing_all_regions(self, painter, time):
+    def draw_showing_all_regions(self, painter):
         """
         draw all the regions
 
             Args:
                 painter (QPainter) the painter to be used
-                time (bool) if True the time intervals of the regions are used
 
             Returns:
                 None

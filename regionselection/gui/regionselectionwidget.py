@@ -60,7 +60,7 @@ class RegionSelectionWidget(qw.QWidget, Ui_RegionSelectionWidget):
         callback for 'show all' radio button
         """
         if self._displayAllButton.isChecked():
-            self._image_label.set_display_all_no_time()
+            self._image_label.set_display_all()
             self.repaint()
         else:
             self._image_label.set_adding()
