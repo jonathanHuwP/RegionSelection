@@ -4,8 +4,7 @@ Created on Tue 27 Oct 2020
 
 Licensed under the Apache License, Version 2.0 (the "License"); you may not use
 this file except in compliance with the License. You may obtain a copy of the
-License at
-http://www.apache.org/licenses/LICENSE-2.0
+License at http://www.apache.org/licenses/LICENSE-2.0
 
 Unless required by applicable law or agreed to in writing, software distributed
 under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
@@ -251,11 +250,11 @@ class RegionSelectionMainWindow(qw.QMainWindow, Ui_RegionSelectionMainWindow):
         file_name, _ = qw.QFileDialog.getSaveFileName(self,
                                                       self.tr("Save Pdf"),
                                                       os.path.expanduser('~'),
-                                                      self.tr("PDF (*.pdf)"))        
-        
+                                                      self.tr("PDF (*.pdf)"))
+
         if file_name is None or file_name == '':
             return
-            
+
         printer = qp.QPrinter(qp.QPrinter.PrinterResolution)
         printer.setOutputFormat(qp.QPrinter.PdfFormat)
         printer.setPaperSize(qp.QPrinter.A4)
@@ -275,11 +274,11 @@ class RegionSelectionMainWindow(qw.QMainWindow, Ui_RegionSelectionMainWindow):
         file_name, _ = qw.QFileDialog.getSaveFileName(self,
                                                       self.tr("Save PNG"),
                                                       os.path.expanduser('~'),
-                                                      self.tr("PNG (*.png)"))        
-        
+                                                      self.tr("PNG (*.png)"))
+
         if file_name is None or file_name == '':
             return
-            
+
         pixmap = self._drawing_widget.get_current_pixmap()
         if pixmap is not None:
             pixmap.save(file_name)
