@@ -37,7 +37,6 @@ class AutoSaveBinary():
 
             Args:
                 project (string) the project name will be added to save
-                file_path (string) the full path name of the file if not present tempfile is created
         """
         # get file, close file, save file path
         descriptor, file_path = tempfile.mkstemp(suffix='.idback',
